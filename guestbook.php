@@ -62,10 +62,16 @@ try {
         $admin = userIsAdmin($conn) ? 1 : 0;
         $color = $_POST['color'];
 
-        $isValidEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
+        $isValidEmail = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
         if ($isValidEmail) {
-            $conn->query("INSERT INTO `entries`(`email`, `color`, `admin`, `text`) 
-                                        VALUES ('$email', '$color', '$admin', '$text');");
+            $statement = $conn->prepare("INSERT INTO `entries`(`email`, `color`, `admin`, `text`) 
+                                        VALUES (:email, :color, :admin, :text);");
+            $statement->execute([
+                'email' => $email,
+                'color' => $color,
+                'admin' => $admin,
+                'text' => $text
+            ]);
         } else {
             echo "<p>[INVALID input]</p>";
         }
